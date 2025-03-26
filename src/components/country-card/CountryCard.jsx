@@ -1,6 +1,7 @@
 import "./countrycard.css";
+import React from "react";
 
-export default function CountryCard({ country }) {
+const CountryCard = React.memo(({ country }) => {
   return (
     <div className="country-card">
       <img src={country.flags.png} alt="" className="country-card__flag" />
@@ -23,4 +24,6 @@ export default function CountryCard({ country }) {
       </div>
     </div>
   );
-}
+});
+
+export default CountryCard;

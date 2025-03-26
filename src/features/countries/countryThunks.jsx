@@ -7,7 +7,6 @@ export const getCountries = createAsyncThunk(
   async (url, { rejectWithValue }) => {
     try {
       const data = await axios.get(url);
-      console.log(data);
 
       return data;
     } catch (error) {

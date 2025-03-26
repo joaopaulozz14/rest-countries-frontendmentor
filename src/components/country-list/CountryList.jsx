@@ -1,33 +1,41 @@
 import { useDispatch, useSelector } from "react-redux";
 import CountryCard from "../country-card/CountryCard";
 import "./countrylist.css";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { getCountries } from "../../features/countries/countryThunks";
 
 function CountryList() {
   const dispatch = useDispatch();
-  const { countries, status, error } = useSelector((state) => state.countries);
-  console.log(countries);
-
+  const { countries, status, error, searchQuery } = useSelector(
+    (state) => state.countries
+  );
   useEffect(() => {
     if (status === "idle") {
       dispatch(getCountries("https://restcountries.com/v3.1/all"));
     }
-  }, [dispatch, status]);
+  }, [status, dispatch]);
 
-  if (status === "loading") {
-    return <p>Carregando países...</p>;
-  }
-
-  if (status === "failed") {
-    return <p>Erro: {error}</p>;
-  }
+  const filteredItems = useMemo(() => {
+    return countries?.data?.filter((country) =>
+      country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [countries?.data, searchQuery]);
 
   return (
     <main className="country-list">
-      {countries.data.map((country) => (
-        <CountryCard key={country.cca3} country={country} />
-      ))}
+      {error && <p>{error}</p>}
+
+      {filteredItems ? (
+        filteredItems.map((country) => (
+          <CountryCard key={country.cca3} country={country} />
+        ))
+      ) : countries.data && countries.data.length > 0 ? (
+        countries.data.map((country) => (
+          <CountryCard key={country.cca3} country={country} />
+        ))
+      ) : (
+        <p>Loading...</p>
+      )}
     </main>
   );
 }
